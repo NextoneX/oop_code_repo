@@ -1,3 +1,5 @@
+.vscode/
+bulid/
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
