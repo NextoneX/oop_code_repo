@@ -41,7 +41,7 @@ int main()
     cout << "no\tname\tscore1\tscore2\tscore3\taverage" << endl;
     for( int i = 0; i < 10; i++){
         // restrict name length
-        cout << i+1 << "\t" << students[i].name.substr(0,8) << "\t"
+        cout << i+1 << "\t" << students[i].name.substr(0,7) << "\t"
             << students[i].score1 << "\t" << students[i].score2 << "\t"
             << students[i].score3 << "\t" << students[i].average() << endl;
     }

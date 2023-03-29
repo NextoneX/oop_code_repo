@@ -1,7 +1,10 @@
 // student.h
 #ifndef _STUDENT_
 #define _STUDENT_
+#include <vector>
 #include <string>
+#include <map>
+#include <iostream>
 using namespace std;
 
 #define SCORE_MAX 5
@@ -10,15 +13,14 @@ class Student
 {
 private:
     // private data
+    string name;
+    map<string,int> course_;
+
 public:
     // public data
-    string name;
-    int score1;
-    int score2;
-    int score3;
 
     // constructor
-    Student(const string & _name, const int & s1, const int & s2, const int & s3);
+    Student(const string & _name);
     Student(const char* _name);
     Student();
     // Student(const Student & s);
@@ -28,10 +30,14 @@ public:
 
     // function
     float average() const;   // calculate average score
+    void addcourse(const string & course_name, const int & course_score);
+    void outcourse(const string & course_name) const;
+    void printname() const;
 
     // operator overloading
     // Student & operator=(const Student & s);
 
     // friends
+
 };
 #endif

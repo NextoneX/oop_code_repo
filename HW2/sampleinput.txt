@@ -1,0 +1,10 @@
+9
+Tom 3 Chinese 3 Math 5 English 5
+Jone 3 History 4 Art 3 Math 2
+Lily 3 English 3 Math 4 Art 5
+Lihua 3 Science 4 Math 3 Art 4
+Wufan 3 Chinese 5 English 3 Art 5
+Mary 4 History 4 Art 2 Chinese 4 Math 5
+Jack 4 History 1 English 3 Chinese 3 Math 4
+Yifan 4 Science 4 Math 3 History 5 Chinese 5
+Jerry 4 English 4 Chinese 4 Art 5 Science 3
