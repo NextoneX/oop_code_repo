@@ -41,6 +41,7 @@ int main()
             int course_score;
             cin >> course_name >> course_score;
             student_list[i].addcourse(course_name, course_score);
+            // update course_list
             course_list[course_name].count++;
             course_list[course_name].sum += course_score;
             course_list[course_name].max = max(course_list[course_name].max, course_score);
@@ -51,6 +52,7 @@ int main()
     // output
     cout.precision(6);
     cout << "----------------------------------------------" << endl;
+    // output the firse line
     cout << "no\tname\t";
     for( auto & j : course_list){
         if(j.first.length() < 8){
