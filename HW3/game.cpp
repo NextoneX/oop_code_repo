@@ -113,19 +113,12 @@ void Game::find_princess(){
     delay_print("You have find the princess!");
     player.has_princess = true;
     delay(0.25);
-    cout << "Princess: ";
-    delay(0.25);
-    delay_print("Oh my warrior, have you come to save me?");
-    delay(0.25);
-    cout << player.name << ": ";
-    delay(0.25);
-    delay_print("Yes, princess. Please come out with me.");
-    delay(1);
-    cout << "Tips: The princess has joined your team." << endl;
-    delay(1);
-    cout << endl;
-    delay_print("Now! Run! Get out of here!");
-    delay(0.5);
+    cout << "Princess: "; delay(0.25);
+    delay_print("Oh my warrior, have you come to save me?"); delay(0.25);
+    cout << player.name << ": "; delay(0.25);
+    delay_print("Yes, princess. Please come out with me."); delay(1);
+    cout << "Tips: The princess has joined your team." << endl; delay(0.5); cout << endl;
+    delay_print("Now! Run! Get out of here!"); delay(0.5);
 }
 
 void Game::_move_to(const Movement & move_to){
@@ -170,8 +163,7 @@ void Game::_move_to(const Movement & move_to){
 
 void Game::choose_level()
 {
-    delay_print("There are 3 levels: 1, 2, 3.");
-    delay(0.5);
+    delay_print("There are 3 levels: 1, 2, 3."); delay(0.5);
     delay_print("Enter your choise:", false);
     string choise;
     getline(cin, choise);
