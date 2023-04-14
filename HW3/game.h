@@ -18,15 +18,13 @@ public:
     bool is_monster;
     bool is_princess;
     bool is_start;
-    Room * east;
     Room * west;
-    Room * north;
     Room * south;
+    Room * east;
+    Room * north;
 
     // constructor
     Room(const string & _name, const bool & _is_monster, const bool & _is_princess, const bool & _is_start)
-    : name(_name), is_monster(_is_monster), is_princess(_is_princess), is_start(_is_start) {}
-    Room(const char* _name, const bool & _is_monster, const bool & _is_princess, const bool & _is_start)
     : name(_name), is_monster(_is_monster), is_princess(_is_princess), is_start(_is_start) {}
     Room(): name("NULL"), is_monster(false), is_princess(false), is_start(false) {}
     // Room(const Room & s);
@@ -35,11 +33,8 @@ public:
     ~Room() {}
 
     // function
-    void set_neighbor(Room * _east, Room * _south, Room * _west, Room * _north){
-        east = _east;
-        south = _south;
-        west = _west;
-        north = _north;
+    void set_neighbor(Room * _west, Room * _south, Room * _east, Room * _north) { // left, down, right, up
+        east = _east; south = _south; west = _west; north = _north;
     }
 
     // operator overloading
@@ -89,12 +84,19 @@ private:
     bool game_state;
 
     // private function
+    // game state
     void win();
     void lose();
-    void delay(const int & delay_time);
     void find_princess();
+    // move
     void print_exit();
     void _move_to(const Movement & move_to);
+    // choose level
+    void choose_level();
+    // init level
+    void init_easy();
+    void init_medium();
+    void init_hard();
 
 public:
     // constructor
@@ -105,11 +107,27 @@ public:
     ~Game() {}
 
     // function
-    void init();
-    void move(const Movement & move_to);
-    bool is_over(){
+    void init();    // game init
+    void move(const Movement & move_to); // player move
+    bool is_over(){ // return !game_state
         return !game_state;
     }
+
+    // static function
+    static void delay(const float & delay_time){ // sleep
+        clock_t start_time;
+        start_time = clock();// clock() return current time
+        for (; (clock() - start_time) < delay_time * CLOCKS_PER_SEC;);// delay delay_time seconds
+    }
+    static void delay_print(const string & text, bool has_endl = true){ // Print text one by one
+        int n = text.size();
+        for(int i=0; i<n; ++i){
+            cout << text[i];
+            delay(0.03125);
+        }
+        if(has_endl) cout << endl; 
+    }
+
     // operator overloading
     // Game & operator=(const Game & s);
 
