@@ -1,0 +1,8 @@
+1
+test
+go east
+go east
+go north
+go west
+go west
+go south

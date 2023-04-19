@@ -2,6 +2,7 @@
 #include "game.h"
 
 void Game::init(){
+    srand(time(NULL));
     game_state = true;
     // choose level
     choose_level();
@@ -28,8 +29,9 @@ void Game::init(){
     delay_print("Now, just start your adventure!");cout << endl;
     delay(1);
     delay_print("Entering the castle.", false);
-    delay(1); cout << ".";delay(1); cout << ".";delay(1); cout << "." << endl << endl;
+    delay(0.5); cout << ".";delay(0.5); cout << ".";delay(0.5); cout << "." << endl << endl;
     delay(1);
+    // enter the first room
     cout << "-------------------------------------------" << endl;
     delay_print("Welcome to " + player.current->name + ".");
     delay(1);
@@ -41,7 +43,7 @@ void Game::init(){
     delay(1);
 }
 
-void Game::move(const Movement & move_to){
+void Game::move(const Movement & move_to){ // move to next room
     cout << endl; delay(1);
     // update current
     _move_to(move_to);
@@ -116,7 +118,7 @@ void Game::find_princess(){
     cout << "Princess: "; delay(0.25);
     delay_print("Oh my warrior, have you come to save me?"); delay(0.25);
     cout << player.name << ": "; delay(0.25);
-    delay_print("Yes, princess. Please come out with me."); delay(1);
+    delay_print("Yes, princess. Please come out with me."); cout << endl; delay(1);
     cout << "Tips: The princess has joined your team." << endl; delay(0.5); cout << endl;
     delay_print("Now! Run! Get out of here!"); delay(0.5);
 }
@@ -188,25 +190,31 @@ void Game::choose_level()
         break;
     }
 }
-
 void Game::init_easy()
 {
     // init room
     room_list.clear();
 // game map:
-//                              room_1 -- princess
-//                                |         |
-//                              lobby -- room_2(M)
+//                             room_1 -- room_3 -- room_5
+//                                |         |         |
+//                              lobby -- room_2 -- room_4
     // create room
     room_list.emplace_back("Lobby", false, false, true);
     room_list.emplace_back("Garden", false, false, false);
-    room_list.emplace_back("Blood Room", true, false, false);
-    room_list.emplace_back("Princess's Room", false, true, false);
+    room_list.emplace_back("Kitchen", false, false, false);
+    room_list.emplace_back("Broken Room", false, false, false);
+    room_list.emplace_back("Balcony", false, false, false);
+    room_list.emplace_back("Large Room", false, false, false);
     // set neighbor
     room_list[0].set_neighbor(nullptr, nullptr, &room_list[2], &room_list[1]);
     room_list[1].set_neighbor(nullptr, &room_list[0], &room_list[3], nullptr);
-    room_list[2].set_neighbor(&room_list[0], nullptr, nullptr, &room_list[3]);
-    room_list[3].set_neighbor(&room_list[1], &room_list[2], nullptr, nullptr);
+    room_list[2].set_neighbor(&room_list[0], nullptr, &room_list[4], &room_list[3]);
+    room_list[3].set_neighbor(&room_list[1], &room_list[2], nullptr,  &room_list[5]);
+    room_list[4].set_neighbor(&room_list[2], nullptr, nullptr, &room_list[5]);
+    room_list[5].set_neighbor(&room_list[3], &room_list[4], nullptr, nullptr);
+    // set monster and princess randomly
+    set_monster_princess_room();
+
     delay_print("You have choose level 1, good luck!");
 }
 void Game::init_medium()
@@ -214,25 +222,29 @@ void Game::init_medium()
     // init room
     room_list.clear();
 // game map:
-//                              room_3 -- room_4 -- room_5
-//                                |         |         |
-//                   room_1 -- lobby -- room_2(M) -- princess
+//                   room_2 -- room_3 -- room_5 -- room_7
+//                      |        |         |         |
+//                   room_1 -- lobby  -- room_4 -- room_6
     // create room
     room_list.emplace_back("Lobby", false, false, true);
     room_list.emplace_back("Balcony", false, false, false);
-    room_list.emplace_back("Blood Room", true, false, false);
+    room_list.emplace_back("Corridor", false, false, false);
     room_list.emplace_back("Broken Room", false, false, false);
     room_list.emplace_back("Corridor", false, false, false);
     room_list.emplace_back("Garden", false, false, false);
-    room_list.emplace_back("princess's room", false, true, false);
+    room_list.emplace_back("Kitchen", false, false, false);
+    room_list.emplace_back("Balcony", false, false, false);
     // set neighbor
-    room_list[0].set_neighbor(&room_list[1], nullptr, &room_list[2], &room_list[3]);
-    room_list[1].set_neighbor(nullptr, nullptr, &room_list[0], nullptr);
-    room_list[2].set_neighbor(&room_list[0], nullptr, &room_list[6], &room_list[4]);
-    room_list[3].set_neighbor(nullptr, &room_list[0], &room_list[4], nullptr);
-    room_list[4].set_neighbor(&room_list[3], &room_list[2], &room_list[5], nullptr);
-    room_list[5].set_neighbor(&room_list[4], &room_list[6], nullptr, nullptr);
-    room_list[6].set_neighbor(&room_list[2], nullptr, nullptr, &room_list[5]);
+    room_list[0].set_neighbor(&room_list[1], nullptr, &room_list[4], &room_list[3]);
+    room_list[1].set_neighbor(nullptr, nullptr, &room_list[0], &room_list[2]);
+    room_list[2].set_neighbor(nullptr, &room_list[1], &room_list[3], nullptr);
+    room_list[3].set_neighbor(&room_list[2], &room_list[0], &room_list[5], nullptr);
+    room_list[4].set_neighbor(&room_list[0], nullptr, &room_list[6], &room_list[5]);
+    room_list[5].set_neighbor(&room_list[3], &room_list[4], &room_list[7], nullptr);
+    room_list[6].set_neighbor(&room_list[4], nullptr, nullptr, &room_list[7]);
+    room_list[7].set_neighbor(&room_list[5], &room_list[6], nullptr, nullptr);
+    // set monster and princess randomly
+    set_monster_princess_room();
     delay_print("You have choose level 2, good luck!");
 }
 void Game::init_hard()
@@ -240,16 +252,16 @@ void Game::init_hard()
     // init room
     room_list.clear();
 // game map:
-//                              room_9 -- princess
+//                              room_8 -- room_9
 //                                |         |
-//                              room_7 -- room_8(M)
+//                              room_6 -- room_7
 //                                |         |
-//                              room_3 -- room_6
-//                                |         |
-//         room_4  -- room_1 -- lobby -- room_2 -- room_5
+//                    room_3 -- room_4 -- room_5
+//                      |         |         |
+//                    room_1 -- lobby  -- room_2 
     // create room
     room_list.emplace_back("Lobby", false, false, true);
-    room_list.emplace_back("Corridor", false, false, false);
+    room_list.emplace_back("Balcony", false, false, false);
     room_list.emplace_back("Corridor", false, false, false);
     room_list.emplace_back("Corridor", false, false, false);
     room_list.emplace_back("Balcony", false, false, false);
@@ -258,18 +270,29 @@ void Game::init_hard()
     room_list.emplace_back("Corridor", false, false, false);
     room_list.emplace_back("Blood Room", true, false, false);
     room_list.emplace_back("Garden", false, false, false);
-    room_list.emplace_back("Princess's Room", false, true, false);
     // set neighbor
-    room_list[0].set_neighbor(&room_list[1], nullptr, &room_list[2], &room_list[3]);
-    room_list[1].set_neighbor(&room_list[4], nullptr, &room_list[0], nullptr);
-    room_list[2].set_neighbor(&room_list[0], nullptr, &room_list[5], &room_list[6]);
-    room_list[3].set_neighbor(nullptr, &room_list[0], &room_list[6], &room_list[7]);
-    room_list[4].set_neighbor(nullptr, nullptr, &room_list[1], nullptr);
-    room_list[5].set_neighbor(&room_list[2], nullptr, nullptr, nullptr);
-    room_list[6].set_neighbor(&room_list[3], &room_list[2], nullptr, &room_list[8]);
-    room_list[7].set_neighbor(nullptr, &room_list[3], &room_list[8], &room_list[9]);
-    room_list[8].set_neighbor(&room_list[7], &room_list[6], nullptr, &room_list[10]);
-    room_list[9].set_neighbor(nullptr, &room_list[7], &room_list[10], nullptr);
-    room_list[10].set_neighbor(&room_list[9], &room_list[8], nullptr, nullptr);
+    room_list[0].set_neighbor(&room_list[1], nullptr, &room_list[2], &room_list[4]);
+    room_list[1].set_neighbor(nullptr, nullptr, &room_list[0], &room_list[3]);
+    room_list[2].set_neighbor(&room_list[0], nullptr, &room_list[5], nullptr);
+    room_list[3].set_neighbor(nullptr, &room_list[1], &room_list[4], nullptr);
+    room_list[4].set_neighbor(&room_list[3], &room_list[0], &room_list[5], &room_list[6]);
+    room_list[5].set_neighbor(&room_list[4], &room_list[2], nullptr, &room_list[7]);
+    room_list[6].set_neighbor(nullptr, &room_list[4], &room_list[7], &room_list[8]);
+    room_list[7].set_neighbor(&room_list[6], &room_list[5], nullptr, &room_list[9]);
+    room_list[8].set_neighbor(nullptr, &room_list[6], &room_list[9], nullptr);
+    room_list[9].set_neighbor(&room_list[8], &room_list[7], nullptr, nullptr);
+    // set monster and princess randomly
+    set_monster_princess_room();
     delay_print("You have choose level 3, good luck!");
+}
+
+void Game::set_monster_princess_room(){
+    int monster_id = (rand() % (room_list.size()-1))+ 1; // random from [1, room_list.size()-1]
+    room_list[monster_id].name = "Bloody room";
+    room_list[monster_id].is_monster = true;
+    int princess_id = (rand() % (room_list.size()-1))+ 1;
+    // avoid collision
+    while (princess_id == monster_id) princess_id = (rand() % (room_list.size()-1))+ 1;
+    room_list[princess_id].name = "Princess's Room";
+    room_list[princess_id].is_princess = true;
 }

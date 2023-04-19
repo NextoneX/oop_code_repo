@@ -16,7 +16,7 @@ int main()
     Game mygame;
     cout << endl;
     Game::delay_print("Loading game.", false);
-    Game::delay(1);cout << ".";Game::delay(1);cout << ".";Game::delay(1);cout << "." << endl << endl;
+    Game::delay(0.5);cout << ".";Game::delay(0.5);cout << ".";Game::delay(0.5);cout << "." << endl << endl;
     Game::delay_print("Welcome to SAVING_HER!");
     Game::delay(0.5);
     Game::delay_print("In this game, you are asked to rescue a princess in a castle.");

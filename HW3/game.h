@@ -5,6 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <ctime>
+#include <cstdlib>
 using namespace std;
 
 class Room
@@ -84,16 +85,17 @@ private:
     bool game_state;
 
     // private function
-    // game state
+    // judge game state
     void win();
     void lose();
     void find_princess();
     // move
-    void print_exit();
-    void _move_to(const Movement & move_to);
+    void print_exit();  // help realize move
+    void _move_to(const Movement & move_to); // help realize move
     // choose level
     void choose_level();
     // init level
+    void set_monster_princess_room();
     void init_easy();
     void init_medium();
     void init_hard();
