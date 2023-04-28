@@ -20,7 +20,8 @@ pdremove: 'pdremove', then you will be able to enter the date and errase the cor
     tips: Press Enter twice to exit.
 
 Make program work together:
-Obviously, the output of pdlist can be given to pdadd and pdremove.
+Obviously, the output of pdlist can be given to pdshow and pdremove.
+Also, you can give the output of pdshow to pdadd, but it is meaningless.
 
 About script:
 Under ./testscript are sample scripts that show ways to make these programs work together and redirect.
