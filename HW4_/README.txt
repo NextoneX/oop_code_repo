@@ -33,4 +33,6 @@ Tips about EOF:
 When emulated at the end of a file with a keyboard, 
 the emulated EOF is only judged to be EOF if it is in the first place of the input character. 
 
+I hope the diary can be a indepandent library file, so all the main function have been realized in diary.cpp,
+the .cpp file in ./src just the encapsulation and application of library files.
 Thank you for checking.

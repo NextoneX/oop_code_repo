@@ -59,12 +59,13 @@ void Diary::pdadd(date in, const string & content){
     // cerr << "Executed successfully." << endl;
 }
 void Diary::pdlist() const{
-    // int count = 0;
+    int count = 0;
     // cerr << endl << "Result:" << endl;
     for(auto i = diary_data.begin(); i != diary_data.end(); ++i){
         cout << i->first << endl;
-        // ++count;
+        ++count;
     }
+    if(count == 0) cerr << "There's no record here that matches your request.";
     // cerr << endl << "Executed successfully. List " << count << " entrys." << endl;
 }
 void Diary::pdlist(date start) const{
@@ -72,14 +73,15 @@ void Diary::pdlist(date start) const{
         cerr << "Wrong date!" << endl;
         return;
     }
-    // int count = 0;
+    int count = 0;
     // cerr << "Result:" << endl;
     for(auto i = diary_data.begin(); i != diary_data.end(); ++i){
         if(start <= i->first){
             cout << i->first << endl;
-            // ++count;
+            ++count;
         }
     }
+    if(count == 0) cerr << "There's no record here that matches your request.";
     // cerr << endl << "Executed successfully. List " << count << " entrys." << endl;
 }
 void Diary::pdlist(date start, date end) const{
