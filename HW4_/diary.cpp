@@ -87,14 +87,15 @@ void Diary::pdlist(date start, date end) const{
         cerr << "Wrong date!" << endl;
         return;
     }
-    // int count = 0;
+    int count = 0;
     // cerr << "Result:" << endl;
     for(auto i = diary_data.begin(); i != diary_data.end(); ++i){
         if((start <= i->first && i->first <= end)){
             cout << i->first << endl;
-            // ++count;
+            ++count;
         }
     }
+    if(count == 0) cerr << "There's no record here that matches your request.";
     // cerr << endl << "Executed successfully. List " << count << " entrys." << endl;
 }
 void Diary::pdshow(date show_date) const{
@@ -102,7 +103,7 @@ void Diary::pdshow(date show_date) const{
         cerr << "No recond of" << show_date << '.' << endl;
         return;
     }
-    cout << show_date << endl << diary_data.at(show_date) << endl << '.' << endl;
+    cout << show_date << ":" << endl << diary_data.at(show_date) << endl;
     // cerr << endl << "Executed successfully." << endl;
 }
 int Diary::pdremove(date remove_date){

@@ -8,7 +8,7 @@ int main(int argc, char* argv[])
     Diary mydiary;
     string start, end;
     Diary::date date_start, date_end;
-    switch (argc)
+    switch (argc) // judge how many parameters are entered
     {
     case 2:
         start = argv[1];
@@ -23,14 +23,13 @@ int main(int argc, char* argv[])
         date_start.year = stoi(start.substr(0,4));
         date_start.month = stoi(start.substr(5,2));
         date_start.day = stoi(start.substr(8,2));
-        date_end.year = stoi(start.substr(0,4));
-        date_end.month = stoi(start.substr(5,2));
-        date_end.day = stoi(start.substr(8,2));
+        date_end.year = stoi(end.substr(0,4));
+        date_end.month = stoi(end.substr(5,2));
+        date_end.day = stoi(end.substr(8,2));
         mydiary.pdlist(date_start, date_end);
         return 0;
     default:
         mydiary.pdlist();
         return 0;
     }
-    
 }

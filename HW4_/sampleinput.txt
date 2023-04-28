@@ -1,3 +1,2 @@
-dd
-ff
-jj
+diary_data
+.

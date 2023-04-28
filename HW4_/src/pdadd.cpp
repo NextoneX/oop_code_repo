@@ -8,7 +8,7 @@ int main(int argc, char* argv[])
     Diary mydiary;
     string command;
     if(argc < 2){
-        cerr << "No input date!" << endl;
+        cerr << "No date entered!" << endl;
         return -1;
     }
     command = argv[1];
@@ -16,17 +16,17 @@ int main(int argc, char* argv[])
         cerr << "Wrong command!" << endl;
         return -1;
     }
-    Diary::date date_in;
+    Diary::date date_in; // input date processing
     date_in.year = stoi(command.substr(0,4));
     date_in.month = stoi(command.substr(5,2));
     date_in.day = stoi(command.substr(8,2));
     string content;
-    getline(cin, command);
+    getline(cin, command); // input content processing
     if(command != ".") content = command;
     while(command != "."){
         if(cin.eof()) break;
         getline(cin, command);
-        content += "\n" + command;
+        if(command != ".") content += "\n" + command;
     }
     mydiary.pdadd(date_in, content);
 }
