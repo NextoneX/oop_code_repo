@@ -5,6 +5,7 @@ Here's one way to use it in terminal:
     cmake ..
     make
     ./hw5
+After creating the file, you can use "./hw5 < ../sampleinput.txt" to use the sample input I provided.
 Tips: In windows, you should use "hw5" instead of "./hw5".
 
 

@@ -31,14 +31,15 @@ string Fraction::to_string(int decimal_digits) const {
 }
 Fraction Fraction::operator+(const Fraction & f) const {
     int new_divisor = LCM(divisor, f.divisor);
-    int new_dividend = dividend * new_dividend / divisor +
-                        f.dividend * new_dividend / f.divisor;
+    // cout << new_divisor << endl;
+    int new_dividend = dividend * new_divisor / divisor +
+                        f.dividend * new_divisor / f.divisor;
     return Fraction(new_dividend, new_divisor);
 }
 Fraction Fraction::operator-(const Fraction & f) const {
     int new_divisor = LCM(divisor, f.divisor);
-    int new_dividend = dividend * new_dividend / divisor -
-                        f.dividend * new_dividend / f.divisor;
+    int new_dividend = dividend * new_divisor / divisor -
+                        f.dividend * new_divisor / f.divisor;
     return Fraction(new_dividend, new_divisor);
 }
 Fraction Fraction::operator*(const Fraction & f) const {
@@ -52,7 +53,6 @@ Fraction Fraction::operator/(const Fraction & f) const {
     return Fraction(new_dividend, new_divisor);
 }
 Fraction::Fraction(string f) {
-    //!todo
     size_t pos = f.find('.');
     if(pos == string::npos){
         dividend = stoi(f);
