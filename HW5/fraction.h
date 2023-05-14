@@ -8,16 +8,17 @@
 #include <iostream>
 #include <algorithm>
 using namespace std;
+
 class Fraction
 {
 private:
 // private data
 
-// private function
+// private function(static)
     // find the greatest common divisor
-    int GCD(int a, int b) const {
+    static int GCD(int a, int b) {
         int r;
-        a = abs(a); b = abs(b);
+        a = abs(a); b = abs(b); // make the input positive
         if(a<b) swap(a, b);
         while(b!=0)
         {
@@ -28,7 +29,7 @@ private:
         return a;
     }
     // find the least common multiple
-    int LCM(const int & a, const int & b) const {
+    static int LCM(const int & a, const int & b) {
         int _max = (abs(a) > abs(b)) ? abs(a) : abs(b);
         int _min = abs(a) + abs(b) - _max;
         int lcm = _max;
@@ -55,8 +56,7 @@ public:
           divisor(f.divisor) {}
     Fraction(const int & _dividend, const int & _divisor){
         assert(_divisor != 0);
-        int gcd = 1;
-        if(_dividend != 0) gcd = GCD(_dividend, _divisor);
+        int gcd = GCD(_dividend, _divisor);
         dividend = _dividend / gcd;
         divisor = _divisor / gcd;
     }
@@ -114,7 +114,10 @@ public:
     }
     friend istream & operator>>(istream & is, Fraction & f) {
         is >> f.dividend >> f.divisor;
-        if(!is) f = Fraction();
+        if(!is) {f = Fraction(); return is;}
+        int gcd = GCD(f.dividend, f.divisor);
+        f.dividend = f.dividend / gcd;
+        f.divisor = f.divisor / gcd;
         return is;
     }
 };

@@ -41,11 +41,18 @@ int main()
     cout << d3 << endl;
     // To string
     cout << "To string:" << endl;
-    string s3 = f3.to_string();
-    cout << s3 << endl;
+    f3 = Fraction(1,4);
+    string s = f3.to_string();
+    cout << s << endl;
     // Inserter and extractor for streams
     cout << "Inserter and extractor for streams:" << endl;
     cout << "Input two integer:";
     cin >> f0;
-    cout << f0;
+    cout << f0 << endl;
+    cout << f0.to_string() << endl;
+    cout << "Input a finite decimal:";
+    cin >> s;
+    f0 = s;
+    cout << f0 << endl;
+    cout << f0.to_string() << endl;
 }

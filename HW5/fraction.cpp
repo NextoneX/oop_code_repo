@@ -6,27 +6,28 @@ string Fraction::to_string(int decimal_digits) const {
     long temp = dividend;
     for(int i = 0; i < decimal_digits; ++i) temp *= 10;
     temp /= divisor;
+    // cout << temp << endl;
     string result;
-    if(temp == 0) { // handle 0
-        result = "0.";
-        for(int i = 0; i < decimal_digits; ++i) result += '0';
-        return result;
-    }
-    if(temp < 0) {  // handle negetive result
-        result.push_back('-');
+    bool negetive_bit;
+    if(temp < 0) { // handle negetive result
+        negetive_bit = true;
         temp = -temp;
     }
     while(temp > 0) {
-        if(decimal_digits == 0) result.insert(result.begin() + 1, '.');
+        if(decimal_digits == 0) result.insert(result.begin(), '.');
         char c = '0' + (temp % 10);
-        result.insert(result.begin() + 1, c);
+        result.insert(result.begin(), c);
         --decimal_digits;
         temp /= 10;
     }
-    if(decimal_digits == 0) { // handle too small result
-        result.insert(result.begin() + 1, '.');
-        result.insert(result.begin() + 1, '0');
+    if(decimal_digits >= 0) { // handle too small result
+        for(int i = 0; i < decimal_digits; ++i) 
+            result.insert(result.begin(), '0');
+        result.insert(result.begin(), '.');
+        result.insert(result.begin(), '0');
     }
+    if(negetive_bit) // handle negetive result
+        result.insert(result.begin(), '-');
     return result;
 }
 Fraction Fraction::operator+(const Fraction & f) const {
