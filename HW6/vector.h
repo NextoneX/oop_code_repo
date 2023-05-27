@@ -14,7 +14,8 @@ public:
   T& at(int index);              // accesses the specified element, throws an exception of
                                  // type 'std::out_of_range' when index <0 or >=m_nSize
   int size() const;              // return the size of the container
-  int capacity() const;          // return the capacity of the container
+  // Add function capacity to do test
+  // int capacity() const;          // return the capacity of the container
   void push_back(const T& x);    // adds an element to the end 
   void clear();                  // clears the contents
   bool empty() const;            // checks whether the container is empty 
@@ -28,7 +29,7 @@ private:
 };
 
 template <class T>
-Vector<T>::Vector()
+Vector<T>::Vector() // initialize Capacity as 10
     : m_pElements(nullptr),
       m_nSize(0),
       m_nCapacity(10) {
@@ -75,10 +76,11 @@ int Vector<T>::size() const {
     return m_nSize;
 }
 
-template <class T>
-int Vector<T>::capacity() const {
-    return m_nCapacity;
-}
+// Add for test
+// template <class T>
+// int Vector<T>::capacity() const {
+//     return m_nCapacity;
+// }
 
 template <class T>
 void Vector<T>::push_back(const T& x) {
@@ -87,6 +89,7 @@ void Vector<T>::push_back(const T& x) {
     m_pElements[m_nSize++] = x;
 }
 
+// The clear actually just set the size to 0, the data is not actually deleted.
 template <class T>
 void Vector<T>::clear() {
     m_nSize = 0;
