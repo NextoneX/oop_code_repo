@@ -84,7 +84,7 @@ private:
     size_type AlignPointer(data_pointer p, size_type align) const noexcept;
     // For small block request, we allocate a new block when the current block is full
     void allocateSmallBlock();
-    // For big block request, we allocate a new block for each request
+    // For big block request, we allocate a entire block for each request
     pointer allocateBigBlock(size_type n);
 };
 
@@ -165,11 +165,11 @@ void MemoryPool<T>::allocateSmallBlock()
     reinterpret_cast<slot_pointer>(newBlock)->next = currentBlock;
     currentBlock = reinterpret_cast<slot_pointer>(newBlock);
 
-    // Pad block body to staisfy the alignment requirements for elements
-    data_pointer body = newBlock + sizeof(slot_pointer);
-    size_type bodyPadding = AlignPointer(body, alignof(slot_type));
+    // Pad block alloc to staisfy the alignment requirements for elements
+    data_pointer alloc = newBlock + sizeof(slot_pointer);
+    size_type allocPadding = AlignPointer(alloc, alignof(slot_type));
 
-    currentSlot = reinterpret_cast<slot_pointer>(body + bodyPadding);
+    currentSlot = reinterpret_cast<slot_pointer>(alloc + allocPadding);
     lastSlot = reinterpret_cast<slot_pointer>(newBlock + blockSize - sizeof(slot_type) + 1);
 
 }
@@ -190,10 +190,10 @@ typename MemoryPool<T>::pointer MemoryPool<T>::allocateBigBlock(size_type n)
         currentBlock = reinterpret_cast<slot_pointer>(newBlock);
     }
 
-    // Pad block body to staisfy the alignment requirements for elements
-    data_pointer body = newBlock + sizeof(slot_pointer);
-    size_type bodyPadding = AlignPointer(body, alignof(slot_type));
-    pointer result = reinterpret_cast<pointer>(body + bodyPadding);
+    // Pad block alloc to staisfy the alignment requirements for elements
+    data_pointer alloc = newBlock + sizeof(slot_pointer);
+    size_type allocPadding = AlignPointer(alloc, alignof(slot_type));
+    pointer result = reinterpret_cast<pointer>(alloc + allocPadding);
 
     return result;
 }
