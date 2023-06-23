@@ -1,5 +1,5 @@
-#ifndef MEMORY_POOL_H
-#define MEMORY_POOL_H
+#ifndef _MEMORYPOOL_
+#define _MEMORYPOOL_
 
 #include <climits>
 #include <cstddef>
@@ -20,7 +20,7 @@ public:
     typedef std::true_type  propagate_on_container_swap;
 
     template <typename U> struct rebind {
-      typedef MemoryPool<U> other;
+        typedef MemoryPool<U> other;
     };
 
     /* Member functions */
@@ -31,7 +31,9 @@ public:
 
     ~MemoryPool() noexcept;
 
+    // Forbid assign operator for const MemoryPool&
     MemoryPool& operator=(const MemoryPool& memoryPool) = delete;
+
     MemoryPool& operator=(MemoryPool&& memoryPool) noexcept;
 
     pointer address(reference x) const noexcept;
@@ -52,10 +54,15 @@ public:
 
 private:
     typedef unsigned char* data_pointer;
+
+    // We divide each memory slice in the smallest unit of slot
     // For better use the memory, we use union to store the next pointer
+    // and the element itself in the same memory.
+    // So Pointers don't introduce extra memory, 
+    // But this is unfriendly for smaller types, such as char
     union Slot {
-      value_type element;
-      Slot* next;
+        value_type element;
+        Slot* next;
     };
     typedef Slot slot_type;
     typedef Slot* slot_pointer;
@@ -69,19 +76,16 @@ private:
     // Points to the next free memory slice
     slot_pointer freeSlots;
 
-    const size_type BlockSize = 4096;
+    // Size of each small memory slice
+    const size_type blockSize = 4096;
 
-    size_type padPointer(data_pointer p, size_type align) const noexcept;
+    // Aligns p to the nearest multiple of align for better memory use
+    size_type AlignPointer(data_pointer p, size_type align) const noexcept;
+    // For small block request, we allocate a new block when the current block is full
     void allocateSmallBlock();
+    // For big block request, we allocate a new block for each request
     pointer allocateBigBlock(size_type n);
 };
-
-template <typename T>
-typename MemoryPool<T>::size_type MemoryPool<T>::padPointer(data_pointer p, size_type align) const noexcept
-{
-  size_type result = reinterpret_cast<uintptr_t>(p);
-  return ((align - result) % align);
-}
 
 template <typename T>
 MemoryPool<T>::MemoryPool() noexcept 
@@ -96,11 +100,10 @@ MemoryPool<T>::MemoryPool(const MemoryPool& memoryPool) noexcept
 template <typename T>
 MemoryPool<T>::MemoryPool(MemoryPool&& memoryPool) noexcept
 {
-    currentBlock = memoryPool.currentBlock;
-    memoryPool.currentBlock = nullptr;
-    currentSlot = memoryPool.currentSlot;
-    lastSlot = memoryPool.lastSlot;
-    freeSlots = memoryPool.freeSlots;
+    std::swap(currentBlock, memoryPool.currentBlock);
+    std::swap(currentSlot, memoryPool.currentSlot);
+    std::swap(lastSlot, memoryPool.lastSlot);
+    std::swap(freeSlots, memoryPool.freeSlots);
 }
 
 template <typename T>
@@ -115,9 +118,9 @@ MemoryPool<T>& MemoryPool<T>::operator=(MemoryPool&& memoryPool) noexcept
     if (this != &memoryPool)
     {
         std::swap(currentBlock, memoryPool.currentBlock);
-        currentSlot = memoryPool.currentSlot;
-        lastSlot = memoryPool.lastSlot;
-        freeSlots = memoryPool.freeSlots;
+        std::swap(currentSlot, memoryPool.currentSlot);
+        std::swap(lastSlot, memoryPool.lastSlot);
+        std::swap(freeSlots, memoryPool.freeSlots);
     }
     return *this;
 }
@@ -125,6 +128,7 @@ MemoryPool<T>& MemoryPool<T>::operator=(MemoryPool&& memoryPool) noexcept
 template <typename T>
 MemoryPool<T>::~MemoryPool() noexcept
 {
+    // Release all the memory we allocated
     slot_pointer curr = currentBlock;
     while (curr != nullptr) {
         slot_pointer prev = curr->next;
@@ -146,44 +150,53 @@ typename MemoryPool<T>::const_pointer MemoryPool<T>::address(const_reference x) 
 }
 
 template <typename T>
+typename MemoryPool<T>::size_type MemoryPool<T>::AlignPointer(data_pointer p, size_type align) const noexcept
+{
+  size_type result = reinterpret_cast<size_type>(p);
+  return ((align - result) % align);
+}
+
+template <typename T>
 void MemoryPool<T>::allocateSmallBlock()
 {
     // Allocate space for the new block and store a pointer to the previous one
-    data_pointer newBlock = reinterpret_cast<data_pointer>
-                            (operator new(BlockSize));
+    data_pointer newBlock = reinterpret_cast<data_pointer>(operator new(blockSize));
     reinterpret_cast<slot_pointer>(newBlock)->next = currentBlock;
     currentBlock = reinterpret_cast<slot_pointer>(newBlock);
+
     // Pad block body to staisfy the alignment requirements for elements
     data_pointer body = newBlock + sizeof(slot_pointer);
-    size_type bodyPadding = padPointer(body, alignof(slot_type));
+    size_type bodyPadding = AlignPointer(body, alignof(slot_type));
+
     currentSlot = reinterpret_cast<slot_pointer>(body + bodyPadding);
-    lastSlot = reinterpret_cast<slot_pointer>
-                (newBlock + BlockSize - sizeof(slot_type) + 1);
+    lastSlot = reinterpret_cast<slot_pointer>(newBlock + blockSize - sizeof(slot_type) + 1);
+
 }
 
 template <typename T>
 typename MemoryPool<T>::pointer MemoryPool<T>::allocateBigBlock(size_type n)
 {
-    size_type newBlockSize = n * sizeof(slot_type) + sizeof(slot_pointer) + alignof(slot_type);
-    data_pointer newBlock = reinterpret_cast<data_pointer>
-                            (operator new(newBlockSize));
+    // Allocate space for the new block and store a pointer to the previous one
+    size_type newblockSize = n * sizeof(slot_type) + sizeof(slot_pointer) + alignof(slot_type);
+    data_pointer newBlock = reinterpret_cast<data_pointer>(operator new(newblockSize));
     reinterpret_cast<slot_pointer>(newBlock)->next = currentBlock;
     currentBlock = reinterpret_cast<slot_pointer>(newBlock);
+
     // Pad block body to staisfy the alignment requirements for elements
     data_pointer body = newBlock + sizeof(slot_pointer);
-    size_type bodyPadding = padPointer(body, alignof(slot_type));
+    size_type bodyPadding = AlignPointer(body, alignof(slot_type));
     pointer result = reinterpret_cast<pointer>(body + bodyPadding);
-    currentSlot = reinterpret_cast<slot_pointer>
-                (newBlock + BlockSize);
-    lastSlot = reinterpret_cast<slot_pointer>
-                (newBlock + BlockSize - sizeof(slot_type) + 1);
+
+    currentSlot = reinterpret_cast<slot_pointer>(newBlock + blockSize);
+    lastSlot = reinterpret_cast<slot_pointer>(newBlock + blockSize - sizeof(slot_type) + 1);
+
     return result;
 }
 
 template <typename T>
 typename MemoryPool<T>::pointer MemoryPool<T>::allocate(size_type n, const_pointer hint)
 {
-    if(n * sizeof(slot_type) + sizeof(slot_pointer) + alignof(slot_type) > BlockSize){
+    if(n * sizeof(slot_type) + sizeof(slot_pointer) + alignof(slot_type) > blockSize){
         return allocateBigBlock(n);
     }
     if (n == 1 && freeSlots != nullptr) {
@@ -257,4 +270,4 @@ void MemoryPool<T>::deleteElement(pointer p)
     }
 }
 
-#endif // MEMORY_POOL_H
+#endif

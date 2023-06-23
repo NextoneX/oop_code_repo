@@ -4,13 +4,19 @@ Here's one way to use it in terminal:
     cd build
     cmake ..
     make
-    ./hw6
-After creating the file, you can use "./hw6 < ../sampleinput.txt" to use the sample input I provided.
-Tips: In windows, you should use "hw6" instead of "./hw6".
-The typical usages and tests for Vector are in main.cpp, you can modify the code to test.
-The main program will print 0 if all the test has been passed, otherwise it will print the first error location.
-For convenient, I add the function capacity() when I test Vector, You can uncomment it and try it.
-In my Vector, the fuction clear actually just set the size of Vector to 0, the data is not actually deleted.
+    ./hw7
+Tips: In windows, you should use "hw7" instead of "./hw7".
+
+In my memory pool, I divide each memory slice in the smallest unit of slot.
+For better use the memory, we use union to store the next pointer and the element itself in the same memory.
+So Pointers don't introduce extra memory, but this is unfriendly for smaller types, such as char.
+(This means that it performs well for those larger types)
+Thus, if time permits, I should override the memory pool for char. However, the final test is coming,
+so just let it go.
+The blocksize for each small memory slice is 4096.(You can change it manually in the header file)
+Everything is wonderful, you can use my memory pool as same as std::allocator.
+(notise MemoryPool& operator=(const MemoryPool& memoryPool) is banned)
+In test.cpp, I put together some test cases. You will see the result if you run hw7.
 
 Thank you for your checking.
 
