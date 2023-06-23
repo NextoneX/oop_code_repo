@@ -1,5 +1,6 @@
 .vscode/
 build/
+test/
 *.zip
 CMakeLists.txt.user
 CMakeCache.txt
