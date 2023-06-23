@@ -53,13 +53,16 @@ public:
     void deleteElement(pointer p);
 
 private:
+    /* Member types */
     typedef unsigned char* data_pointer;
+    // Size of each small memory slice
+    const size_type blockSize = 4096;
 
     // We divide each memory slice in the smallest unit of slot
     // For better use the memory, we use union to store the next pointer
     // and the element itself in the same memory.
     // So Pointers don't introduce extra memory, 
-    // But this is unfriendly for smaller types, such as char
+    // but this is unfriendly for smaller types, such as char
     union Slot {
         value_type element;
         Slot* next;
@@ -76,9 +79,7 @@ private:
     // Points to the next free memory slice
     slot_pointer freeSlots;
 
-    // Size of each small memory slice
-    const size_type blockSize = 4096;
-
+    /* Member functions */
     // Aligns p to the nearest multiple of align for better memory use
     size_type AlignPointer(data_pointer p, size_type align) const noexcept;
     // For small block request, we allocate a new block when the current block is full
@@ -131,9 +132,9 @@ MemoryPool<T>::~MemoryPool() noexcept
     // Release all the memory we allocated
     slot_pointer curr = currentBlock;
     while (curr != nullptr) {
-        slot_pointer prev = curr->next;
+        slot_pointer nextptr = curr->next;
         operator delete(reinterpret_cast<void*>(curr));
-        curr = prev;
+        curr = nextptr;
     }
 }
 
@@ -179,16 +180,20 @@ typename MemoryPool<T>::pointer MemoryPool<T>::allocateBigBlock(size_type n)
     // Allocate space for the new block and store a pointer to the previous one
     size_type newblockSize = n * sizeof(slot_type) + sizeof(slot_pointer) + alignof(slot_type);
     data_pointer newBlock = reinterpret_cast<data_pointer>(operator new(newblockSize));
-    reinterpret_cast<slot_pointer>(newBlock)->next = currentBlock;
-    currentBlock = reinterpret_cast<slot_pointer>(newBlock);
+
+    // Insert it after the current memory block(if have)
+    if(currentBlock != nullptr){
+        reinterpret_cast<slot_pointer>(newBlock)->next = currentBlock->next;
+        currentBlock->next = reinterpret_cast<slot_pointer>(newBlock);
+    }else{
+        reinterpret_cast<slot_pointer>(newBlock)->next = nullptr;
+        currentBlock = reinterpret_cast<slot_pointer>(newBlock);
+    }
 
     // Pad block body to staisfy the alignment requirements for elements
     data_pointer body = newBlock + sizeof(slot_pointer);
     size_type bodyPadding = AlignPointer(body, alignof(slot_type));
     pointer result = reinterpret_cast<pointer>(body + bodyPadding);
-
-    currentSlot = reinterpret_cast<slot_pointer>(newBlock + blockSize);
-    lastSlot = reinterpret_cast<slot_pointer>(newBlock + blockSize - sizeof(slot_type) + 1);
 
     return result;
 }
@@ -206,6 +211,7 @@ typename MemoryPool<T>::pointer MemoryPool<T>::allocate(size_type n, const_point
     }
     else {
         if (currentSlot + (n - 1) >= lastSlot){
+            // Put the remaining slots into freeSlots
             while(currentSlot < lastSlot){
                 currentSlot->next = freeSlots;
                 freeSlots = currentSlot;
@@ -215,7 +221,7 @@ typename MemoryPool<T>::pointer MemoryPool<T>::allocate(size_type n, const_point
         }
         pointer result = reinterpret_cast<pointer>(currentSlot);
         currentSlot += n;
-        return reinterpret_cast<pointer>(result);
+        return result;
     }
 }
 

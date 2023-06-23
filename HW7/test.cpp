@@ -164,7 +164,7 @@ int main()
 		std::cout << "incorrect assignment in vector %d\n" << tIndex << std::endl;
 	
 	myObject tObj1(13, 20);
-	testVec[tIndex]->setElement(testVec[tIndex]->size()/2, &tObj1);
+	// testVec[tIndex]->setElement(testVec[tIndex]->size()/2, &tObj1);
 	if (!testVec[tIndex]->checkElement(testVec[tIndex]->size() / 2, &tObj1))
 		std::cout << "incorrect assignment in vector " << tIndex << " for object (13,20)" << std::endl;
 
@@ -194,13 +194,6 @@ int main()
 
 // int main()
 // {
-//   // MemoryPool<std::vector<int, MyAllocator<int>>> pool;
-//   // std::cout << "start" << std:: endl;
-//   // int testSize = 10000;
-//   // std::vector<int, MemoryPool<int>> vecints(testSize);
-//   // vecints[testSize - 1] = 0;
-//   // std::cout<< vecints[testSize - 1] <<std::endl;
-//   // std::cout<< testSize <<std::endl;
 
 //   std::random_device rd;
 //   std::mt19937 gen(rd());
